@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+<title>東京都 公金支出情報オープンデータ</title>
+</head>
+<body style="margin:1em;text-align:center;">
+<h1>東京都 公金支出情報オープンデータ</h1>
+<canvas id="chart"></canvas>
+<div style="font-size:80%">データ出典：<a href="https://catalog.data.metro.tokyo.lg.jp/dataset/t000016d0000000005">公金支出情報（一般会計・特別会計） - データセット - 東京都オープンデータカタログサイト</a> を加工した<a href="./money_tokyo_secret.csv">非開示情報件数CSV</a></div>
+ 
+<script type="module">
+import Chart from "https://code4sabae.github.io/kafumon/lib/Chart.mjs";
+import util from "https://taisukef.github.io/util/util.mjs";
+
+const main = async () => {
+  const url = "./money_tokyo_secret.csv";
+  
+  const json = await util.fetchCSVtoJSON(url);
+  console.log(json);
+
+  const date = [];
+  const data1 = [];
+  const data2 = [];
+  for (const d of json) {
+    date.push(d["monthID"]);
+    data1.push(d["totalnumber"]);
+    data2.push(d["nsecret"]);
+  }
+
+  const config = {
+    data: {
+      labels: date,
+      datasets: [
+        { type: "line", data: data1, borderColor: 'rgb(255, 99, 132)', fill: false, lineTension: 0, yAxisID: "yl" },
+        { type: "bar", data: data2, backgroundColor: 'rgb(99, 255, 132)', fill: false, lineTension: 0, yAxisID: "yr" }
+      ]
+    },
+    options: {
+      //title: { display: true, text: "東京都 公金支出情報オープンデータ" },
+      scales: {
+        xAxes: [{ scaleLabel: { display: true, labelString: "日付" } }],
+        yAxes: [
+        { id: "yr", position: "right", scaleLabel: { display: true, labelString: "東京都情報公開条例に規定する非開示情報に当たるために非公開となった件数" }, ticks: { beginAtZero: true } },
+        { id: "yl", position: "left", scaleLabel: { display: true, labelString: "公金支出情報件数" }, ticks: { beginAtZero: true } },
+        ],
+      },
+      legend: { display: false }
+    }
+  };
+  new Chart.Chart(chart, config);
+};
+main();
+</script>
+</body>
+</html>

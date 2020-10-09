@@ -1,0 +1,1 @@
+nkf -w op20200323_r1koukinsisyutujouhou_2020_01.csv > op20200323_r1koukinsisyutujouhou_2020_01_utf8.csv
